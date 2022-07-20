@@ -19,27 +19,30 @@
  
 Notes:
  
-    - it seems to me people are doing this calculation wrong in QGIS.
-     (for instance, using flow accumulation directly the 'a' parameter, which is       
-     as Beven &Kirkby (2009) the "area drained per unit contour length"
+    - According to Beven & Kirkby (2009) the 'a' parameter is the
+     "area drained per unit contour length", but i'm not sure if people
+     elsewhere are doing it properly, so i did this effort.
        
-    - in my understading of the original code, the (upstream) area
-    is being updated during the process resulting in a flow_acc
-    which accounts for contour length adjustment. This is cool.
-    However, maybe it requires a flow_dir conditioned dem, then using
-    a raw or bare-earth dem could be a problem...i'm not sure.
+    - By translating the original code, it seems to me that the
+    (upstream) area is updated during the process resulting in a
+    flow_acc which accounts for a weighted contour length adjustment.
+    I think I finally matched the conceptual idea and what the authors
+    had in mind.
+        
+    - Its not clear to me, but maybe this implementation requires a
+    conditioned dem (sinks+fdr), so using raw or bare-earth dem could
+    put additional challenge.  i'm too not sure, yet.
   
-    - included lots of comments to make it more understandable (for me)
+    - I included lots of comments to make it more understandable (to me)
     
-    - adapted running window indexes and conditions (jj,ii,etc.)
+    - Adapted running window indexes and conditions (jj,ii,etc.)
 
-    - replaced variable ZERO = 0.0000001  to 0. everywhere.
+    - Replaced variable ZERO = 0.0000001  to 0. everywhere.
  
-    - not really "issues"  carried from original code:
+    - (Not really) issues carried from original code:
       : average downslope slope is also calculated but not returned 
       : no mechanism in place to remove negative atb values
      
-
  
 TODO:
     - filter negative atb values and improve output table        
