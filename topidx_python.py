@@ -25,8 +25,7 @@ Issues:
     - River/sink pixel has the following code for the topographic index.
       atb[i,j] = np.log(area[i,j] / (2 * sumtb))
       ... but if area[i,j] must be total drainage area...
-    
-
+   
  
 Notes:
      
@@ -48,37 +47,42 @@ Notes:
     
     - Adapted running window indexes and conditions (jj,ii,etc.)
 
-    - Replaced variable ZERO = 0.0000001  to 0. everywhere.
+    - Replaced variable ZERO = 0.0000001 to 0.
+    - Replaced initial value for atb from -9.9 to -1
+
  
     - (Not really) issues carried from original code:
       : average downslope slope is also calculated but not returned 
-      : no mechanism in place to remove negative atb values
-     
+      : no mechanism in place to remove negative atb values     
  
 TODO:
-    - filter negative atb values and improve output table        
-    - decide raster lib/reading format, probably rasterio or gdal.
-    - probably include pandas for table export
-    - test!
+    - assert dem and river matrixes
+    - get resolution from raster metadata
+    - test! :/
  
 '''
 
 import numpy as np
+import rasterio
+import pandas as pd
 
-
-# read dem
-
-# read river
+# read dem and river arrays
+with rasterio.open('dem.tif','r') as src:
+    dem = src.read(1)
+with rasterio.open('river.tif','r') as src:
+    river = src.read(1)
 
 
 # metadata
-nrow = 
-ncol = 
+nrow = dem.height
+ncol = dem.width
+nodata = dem.nodata
 ew_res = 30.
-nodata = -9999.
 
-# parameters
-exclude = np.nan
+
+# parameter value to exclude pixel
+#exclude = np.nan  # i dont want use np.ma just to treat np.nan
+exclude = -9999   
 
 
 # factors for cardinal and diagonal directions
@@ -89,9 +93,9 @@ dx2 = 1./(np.sqrt(2)*ew_res)
 # initialize arrays
 dem = np.where(dem==nodata, exclude, dem)  # exclude nodata
 mask = ~np.isna(dem)
-area = np.where(mask, ew_res*ns_res, np.nan)
-slope = np.where(mask, 0., np.nan)
-atb = np.where(mask, 0., np.nan)   # original code suggests -9.9, but why?!
+area = np.where(mask, ew_res*ns_res, exclude)
+slope = np.where(mask, 0., exclude)
+atb = np.where(mask, -1., exclude)
 
 
 # number of pixels to calculate
@@ -118,7 +122,7 @@ while((natb /= natbold) and (natb < nmax)):
         for i in range(nrow):      
            
             # skip non-catchment cells and cells that are done
-            if( (dem[i,j] == exclude) or (atb[i,j]>0.) ):  #TODO: if stucks here, try: not np.isnan(atb[i,j])
+            if( (dem[i,j] == exclude) or (atb[i,j]>0.) ):
                 continue
             
             # check if river pixel
@@ -131,8 +135,10 @@ while((natb /= natbold) and (natb < nmax)):
                     for jm range(-1,2,1):
                         ii = i+im
                         jj = j+jm
-                        if ( (ii >= 0 and ii < nrow) and (jj >= 0 and jj < ncol) and (im/=0 and jm/=0) ): # respect matrix borders and ignore self pixel
-                            if ( (dem[ii,jj] /= exclude) and (dem[ii,jj] > dem[i,j]) and (np.isnan(atb[ii,jj])) ):  #
+                        # check borders and ignore self pixel
+                        if ( (ii >= 0 and ii < nrow) and (jj >= 0 and jj < ncol) and (im/=0 and jm/=0) ):
+                            # valid pixels, check upslope and if wasnt processed
+                            if ( (dem[ii,jj] /= exclude) and (dem[ii,jj] > dem[i,j]) and (atb[ii,jj]<0.) ):
                                 not_yet = 1
                 
                 # upstream must have calculated index
@@ -224,12 +230,12 @@ while((natb /= natbold) and (natb < nmax)):
             # normal cells - previous condition for sink or "river" didnt catch 
             # average contour length
             if(sumrt > 0.):
-                c = area[i,j] / sumrt    #..it look odd at first, but area is  being updated in the process (see below)
+                c = area[i,j] / sumrt    #..it look odd at first, but area is being updated in the process (see below)
                 atb[i,j] = np.log(c)
                 slope[i,j] = sumtb / nrout
-            else:
+            else: #flat neighborhood
                 c = 0
-                atb[i,j] = 0.01
+                atb[i,j] = 0.01   #dummy value?
                 slope[i,j] = 0
                 
             # updates global counter
@@ -247,12 +253,12 @@ while((natb /= natbold) and (natb < nmax)):
                                 area[ii,jj] = area[ii,jj] + c * routdem[nrout]
                     nrout = nrout + 1 #nrout is (and must be) properly updated to match k = 0,8 in previous step
                     
-  # format output
-  output_atb = []
-  output_area = []
-  for j in range(ncol):
-    for i in range(nrow):
-        if ( atb[i,j] == exclude):
-            area[i,j] = exclude      
-        output_atb = atb[i,j]
-        #output_area = area[i,j] #not rly needed
+# prepare output table
+area = np.where(atb==exclude,exclude,area) #exclude pixels
+output_atb = atb.ravel().tolist()
+#output_area = area.ravel().tolist()
+
+# make dataframe, filter negative atb, save to xls
+df_atb = pd.DataFrame(output_atb,columns=['atb'])
+df_atb_filtered = df_atb[df_atb>0]
+df_atb_filtered.to_excel('table_atb.xlsx')
