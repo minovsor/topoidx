@@ -22,6 +22,10 @@ Issues:
     processed even if upslopes were not resolved. This is a clear
     restriction for "upland" pixels, by using the 'not_yet' variable.
     
+    - River/sink pixel has the following code for the topographic index.
+      atb[i,j] = np.log(area[i,j] / (2 * sumtb))
+      ... but if area[i,j] must be total drainage area...
+    
 
  
 Notes:
