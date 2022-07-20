@@ -15,19 +15,26 @@
  contributing area model of basin hydrology / Un modèle à base physique de zone d'appel
  variable de l'hydrologie du bassin versant, Hydrological Sciences Journal, 24:1, 43-69
  DOI: 10.1080/02626667909491834
- 
+
+Issues:
+
+    - I do not understand WHY rivers/sink pixels are allowed to be
+    processed even if upslopes were not resolved. This is a clear
+    restriction for "upland" pixels, by using the 'not_yet' variable.
+    
+
  
 Notes:
- 
+     
     - According to Beven & Kirkby (2009) the 'a' parameter is the
      "area drained per unit contour length", but i'm not sure if people
-     elsewhere are doing it properly, so i did this effort.
-       
+     elsewhere are doing it properly, so here I am.
+     
     - By translating the original code, it seems to me that the
     (upstream) area is updated during the process resulting in a
     flow_acc which accounts for a weighted contour length adjustment.
-    I think I finally matched the conceptual idea and what the authors
-    had in mind.
+    (still need to run, to be sure)
+    I think I'm geting close to understand what the authors had in mind.
         
     - Its not clear to me, but maybe this implementation requires a
     conditioned dem (sinks+fdr), so using raw or bare-earth dem could
@@ -134,8 +141,8 @@ while((natb /= natbold) and (natb < nmax)):
                 # find the outflow direction and calculate the sum of weights using 
                 # ( tanb*countourlength). Contour length = 0.5dx for the cardinal
                 # direction and 0.354dx for diagonal
-                routdem = np.zeros(9)
-                tanb = np.zeros(9)
+                routdem = np.zeros(9) #0..8 (9 pixels)
+                tanb = np.zeros(9)    #0..8 (p pixels)
                 sumrt = 0
                 sumtb = 0
                 nrout = 0
@@ -232,9 +239,9 @@ while((natb /= natbold) and (natb < nmax)):
                     jj = j+jm
                     if ((ii >= 0 and ii < nrow) and (jj >= 0 and jj < ncol) and (im/=0 and jm/=0) ):
                         if (atb[ii,jj] /= exclude):
-                            if ( routdem[nrout] > 0):
+                            if ( routdem[nrout] > 0): 
                                 area[ii,jj] = area[ii,jj] + c * routdem[nrout]
-                    nrout = nrout + 1
+                    nrout = nrout + 1 #nrout is (and must be) properly updated to match k = 0,8 in previous step
                     
   # format output
   output_atb = []
