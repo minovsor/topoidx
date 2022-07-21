@@ -8,13 +8,16 @@
  https://github.com/ICHydro/topmodel/blob/master/topmodel/src/c_topidx.c
  
  Based on my readings I believe the C version was translated from a
- original FORTRAN code by KJ Beven & MJ Kirkby, from which i recommend
- the following paper.
+ original FORTRAN code, also i would recommend the following papers.
   
  K. J. BEVEN & M. J. KIRKBY (1979) A physically based, variable
  contributing area model of basin hydrology / Un modèle à base physique de zone d'appel
  variable de l'hydrologie du bassin versant, Hydrological Sciences Journal, 24:1, 43-69
  DOI: 10.1080/02626667909491834
+ 
+ P QUINN P, K BEVEN et al (1991),  The prediction of hillslope flow paths
+ for distributed hydrological modelling using digital terrain models.
+ Hydrol. Process., 5: 59-79. https://doi.org/10.1002/hyp.3360050106
 
 Issues:
 
