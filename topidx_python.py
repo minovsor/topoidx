@@ -18,6 +18,10 @@
  P QUINN P, K BEVEN et al (1991),  The prediction of hillslope flow paths
  for distributed hydrological modelling using digital terrain models.
  Hydrol. Process., 5: 59-79. https://doi.org/10.1002/hyp.3360050106
+ 
+ EM O’LOUGHLIN (1986). Prediction of Surface Saturation Zones in Natural Catchments
+ by Topographic Analysis. Water Resources Research, 22(5), 794–804.
+ doi:10.1029/wr022i005p00794 
 
 Issues:
 
@@ -39,9 +43,8 @@ Notes:
     - By translating the original code, it seems to me that the
     (upstream) area is updated during the process resulting in a
     flow_acc which accounts for a weighted contour length adjustment.
-    (still need to run, to be sure)
-    I think I'm geting close to understand what the authors had in mind.
-        
+    I understand it's is based on Quinn et al. (1991)
+            
     - Its not clear to me, but maybe this implementation requires a
     conditioned dem (sinks+fdr), so using raw or bare-earth dem could
     put additional challenge.  i'm too not sure, yet.
