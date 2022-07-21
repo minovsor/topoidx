@@ -54,11 +54,13 @@ Notes:
 
     - Replaced variable ZERO = 0.0000001 to 0.
     - Replaced initial value for atb from -9.9 to -1
+    - Final table is filtered for non-negative atb
+    - Returns both atb and area
 
  
-    - (Not really) issues carried from original code:
+    - (not really) issues carried from original code:
       : average downslope slope is also calculated but not returned 
-      : no mechanism in place to remove negative atb values     
+ 
  
 TODO:
     - assert dem and river matrixes
@@ -261,9 +263,9 @@ while((natb /= natbold) and (natb < nmax)):
 # prepare output table
 area = np.where(atb==exclude,exclude,area) #exclude pixels
 output_atb = atb.ravel().tolist()
-#output_area = area.ravel().tolist()
+output_area = area.ravel().tolist()
 
 # make dataframe, filter negative atb, save to xls
-df_atb = pd.DataFrame(output_atb,columns=['atb'])
-df_atb_filtered = df_atb[df_atb['atb']>0]
-df_atb_filtered.to_excel('table_atb.xlsx')
+df_out = pd.DataFrame(zip(output_atb,output_area),columns=['atb','area'])
+df_out_filtered = df_out[df_out['atb']>0]
+df_out_filtered.to_excel('table_atb_area.xlsx')
