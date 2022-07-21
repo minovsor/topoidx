@@ -7,8 +7,8 @@
  Pythonized version of original C code from:
  https://github.com/ICHydro/topmodel/blob/master/topmodel/src/c_topidx.c
  
-I would recommend the following papers.
-  
+ I recommend the following papers
+ 
  K. J. BEVEN & M. J. KIRKBY (1979) A physically based, variable
  contributing area model of basin hydrology / Un modèle à base physique de zone d'appel
  variable de l'hydrologie du bassin versant, Hydrological Sciences Journal, 24:1, 43-69
@@ -265,5 +265,5 @@ output_atb = atb.ravel().tolist()
 
 # make dataframe, filter negative atb, save to xls
 df_atb = pd.DataFrame(output_atb,columns=['atb'])
-df_atb_filtered = df_atb[df_atb>0]
+df_atb_filtered = df_atb[df_atb['atb']>0]
 df_atb_filtered.to_excel('table_atb.xlsx')
