@@ -7,8 +7,7 @@
  Pythonized version of original C code from:
  https://github.com/ICHydro/topmodel/blob/master/topmodel/src/c_topidx.c
  
- Based on my readings I believe the C version was translated from a
- original FORTRAN code, also i would recommend the following papers.
+I would recommend the following papers.
   
  K. J. BEVEN & M. J. KIRKBY (1979) A physically based, variable
  contributing area model of basin hydrology / Un modèle à base physique de zone d'appel
