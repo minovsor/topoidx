@@ -25,12 +25,12 @@
 Issues:
 
     - I do not understand WHY rivers/sink pixels are allowed to be
-    processed even if upslopes were not resolved. This is a clear
-    restriction for "upland" pixels, by using the 'not_yet' variable.
+    processed even if upslopes were not resolved, which is a clear
+    restriction for the "upland" pixels.
     
-    - River/sink pixel has the following code for the topographic index.
-      atb[i,j] = np.log(area[i,j] / (2 * sumtb))
-      ... but if area[i,j] must be total drainage area...
+    River/sink pixel has the following code for the topographic index.
+        atb[i,j] = np.log(area[i,j] / (2 * sumtb))
+    ..thus it seems to me its dependant of proper flow accumulation upstream    
    
  
 Notes:
@@ -39,7 +39,7 @@ Notes:
      "area drained per unit contour length", but i'm not sure if people
      elsewhere are doing it properly, so here I am.
      
-    - By translating the original code, it seems to me that the
+    - By translating the original code, I understand that the
     (upstream) area is updated during the process resulting in a
     flow_acc which accounts for a weighted contour length adjustment.
     I understand it's is based on Quinn et al. (1991)
