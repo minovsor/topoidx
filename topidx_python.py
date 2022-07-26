@@ -28,9 +28,11 @@ Issues:
     processed even if upslopes were not resolved, which is a clear
     restriction for the "upland" pixels.
     
+    For instance...
     River/sink pixel has the following code for the topographic index.
         atb[i,j] = np.log(area[i,j] / (2 * sumtb))
-    ..thus it seems to me its dependant of proper flow accumulation upstream    
+    ..thus it seems to me the flow accumulation [area] should've been
+    properly calculated upstream
    
  
 Notes:
@@ -39,23 +41,22 @@ Notes:
      "area drained per unit contour length", but i'm not sure if people
      elsewhere are doing it properly, so here I am.
      
-    - By translating the original code, I understand that the
-    (upstream) area is updated during the process resulting in a
-    flow_acc which accounts for a weighted contour length adjustment.
+    - By translating the original code, I believe the (upstream) area
+    is being updated during the process resulting in a flow_acc which
+    accounts for a weighted contour length adjustment.
     I understand it's is based on Quinn et al. (1991)
             
-    - Its not clear to me, but maybe this implementation requires a
-    conditioned dem (sinks+fdr), so using raw or bare-earth dem could
-    put additional challenge.  i'm too not sure, yet.
+    - Probably this implementation requires a conditioned dem (sinks+fdr),
+    so using raw or bare-earth dem could put additional challenge.
   
     - I included lots of comments to make it more understandable (to me)
     
-    - Adapted running window indexes and conditions (jj,ii,etc.)
+    - Adapted indexing of running windows and related booleans (jj,ii,etc.)
 
     - Replaced variable ZERO = 0.0000001 to 0.
     - Replaced initial value for atb from -9.9 to -1
     - Final table is filtered for non-negative atb
-    - Returns both atb and area
+    - Returns both atb (which is ln(a/tanb) ) and flow accum
 
  
     - (not really) issues carried from original code:
@@ -130,13 +131,14 @@ while((natb /= natbold) and (natb < nmax)):
            
             # skip non-catchment cells and cells that are done
             if( (dem[i,j] == exclude) or (atb[i,j]>0.) ):
-                continue
+                continue            
             
-            # check if river pixel
             # river cells don't accumulate flow downstream and will
             # use the average of the inflow slope as the local gradient
-            if(rivermap[i,j] == 1):
+
+            if(rivermap[i,j] == 1):  # check if river pixel
                 river = 1
+                #ms: this seems odd to me.. isnt it necessary that area[i,j] have been properly updated for rivers?
             else:
                 # not a river: check 8 flow directions for upslope elements without a topidx value ( Z[neigh]>Z[cur] & a[neigh]=none )
                 not_yet = 0              
@@ -211,9 +213,10 @@ while((natb /= natbold) and (natb < nmax)):
                             if((im == 0) or (jm == 0)):
                                 dnx = dx1
                             else:
-                                dnx = dx2                            
+                                dnx = dx2
+                            # proceed to summing, average comes after the loop
                             if( rivermap[i,j] == 0 ):
-                                # for sink/boundary squares sumtb is just the average slope (ms: for now we're summing, average comes later)
+                                # for sink/boundary squares sumtb is just the average slope                                
                                 sumtb = subtb + (dem[ii,jj] - dem[i,j]) * dnx
                                 nslp = nslp + 1
                             else:
@@ -221,7 +224,7 @@ while((natb /= natbold) and (natb < nmax)):
                                 if (dem[ii,jj] > dem[i,j]) :
                                     sumtb = sumtb + (dem[ii,jj] - dem[i,j]) * dnx
                                     nslp = nslp + 1
-                                    
+
                 # calculate the average inflow/sink slope angle
                 if(sumtb > 0.):
                     sumtb = sumtb / nslp
@@ -233,10 +236,10 @@ while((natb /= natbold) and (natb < nmax)):
                 # updates global counter
                 natb = natb + 1
                 continue                
-                #- end rivers and sinks, (and current loop)
+                #- end rivers and sinks, (kills current loop)
 
 
-            # normal cells - previous condition for sink or "river" didnt catch 
+            # normal cells - continue for "not a sink or river"
             # average contour length
             if(sumrt > 0.):
                 c = area[i,j] / sumrt    #..it look odd at first, but area is being updated in the process (see below)
@@ -250,7 +253,7 @@ while((natb /= natbold) and (natb < nmax)):
             # updates global counter
             natb = natb + 1
             
-            # calculate downslope area: seems like an update in downslope pixels, using weighted flow accumulation
+            # calculate downslope area: weighted flow accumulation!?
             nrout = 0
             for im in range(-1,2,1):
                 for jm range(-1,2,1):
@@ -260,7 +263,7 @@ while((natb /= natbold) and (natb < nmax)):
                         if (atb[ii,jj] /= exclude):
                             if ( routdem[nrout] > 0): 
                                 area[ii,jj] = area[ii,jj] + c * routdem[nrout]
-                    nrout = nrout + 1 #nrout is (and must be) properly updated to match k = 0,8 in previous step
+                    nrout = nrout + 1 #nrout is (and must be) properly updated to match k = 0..8 in routdem[k]
                     
 # prepare output table
 area = np.where(atb==exclude,exclude,area) #exclude pixels
