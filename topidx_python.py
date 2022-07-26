@@ -133,6 +133,8 @@ while((natb /= natbold) and (natb < nmax)):
                 continue
             
             # check if river pixel
+            # river cells don't accumulate flow downstream and will
+            # use the average of the inflow slope as the local gradient
             if(rivermap[i,j] == 1):
                 river = 1
             else:
