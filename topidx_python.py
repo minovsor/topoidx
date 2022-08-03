@@ -32,7 +32,7 @@ Issues:
     River/sink pixel has the following code for the topographic index.
         atb[i,j] = np.log(area[i,j] / (2 * sumtb))
     ..thus it seems to me the flow accumulation [area] should've been
-    properly calculated upstream
+    previouly calculated upstream..
    
    .. it makes sense to me only if ("anyhow") the "river" pixels are located in
    the last i-j indexes.
@@ -41,7 +41,11 @@ Notes:
      
     - According to Beven & Kirkby (2009) the 'a' parameter is the
      "area drained per unit contour length", but i'm not sure if people
-     elsewhere are doing it properly, so here I am.
+     elsewhere are doing it properly.
+     
+     - I often see lectures/notes/teachings/videos/etc suggesting
+     straigthforward use of flowacc in the index, without accounting
+     weighted countour length or proper river treatment.
      
     - By translating the original code, I believe the (upstream) area
     is being updated during the process resulting in a flow_acc which
