@@ -27,13 +27,15 @@ Issues:
     - I do not understand WHY rivers/sink pixels are allowed to be
     processed even if upslopes were not resolved, which is a clear
     restriction for the "upland" pixels.
-    
+        
     For instance...
     River/sink pixel has the following code for the topographic index.
         atb[i,j] = np.log(area[i,j] / (2 * sumtb))
     ..thus it seems to me the flow accumulation [area] should've been
     properly calculated upstream
    
+   .. it makes sense to me only if ("anyhow") the "river" pixels are located in
+   the last i-j indexes.
  
 Notes:
      
@@ -44,9 +46,9 @@ Notes:
     - By translating the original code, I believe the (upstream) area
     is being updated during the process resulting in a flow_acc which
     accounts for a weighted contour length adjustment.
-    I understand it's is based on Quinn et al. (1991)
+    Hence, I understand it's is based on Quinn's et al. (1991) proposal.
             
-    - Probably this implementation requires a conditioned dem (sinks+fdr),
+    - Probably this alogirthm requires a conditioned dem (sinks+fdr),
     so using raw or bare-earth dem could put additional challenge.
   
     - I included lots of comments to make it more understandable (to me)
