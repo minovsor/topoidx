@@ -34,51 +34,40 @@ Notes:
      elsewhere are doing it properly.
      
      - I often see lectures/notes/teachings/videos/etc suggesting
-     (1) straigthforward use of flowacc in the index ans (2) not accounting
-     weighted countour length or proper river treatment.
+     (1) straigthforward use of flowacc in the index; (2) not accounting
+     weighted countour length or (3) ignoring proper treatment for rivers.
      
-    - By translating the original code, It seems to me it accounts for
-    a weighted contour length adjustment based on Quinn's et al. (1991) proposal.
+    - By translating the original code, It seems to me it uses the
+    weighted contour length adjustment based on Quinn's et al. (1991).
+    Also, it seems to me 'the total upslope area' is not the same
+    as the typical 'basin flow accumulation'. It is also supported by
+    Wolock & Price's (1994) paper.
+    
+    - Rivers/sink pixels are allowed to be processed even if upslopes
+    were not resolved, which is a clear restriction for "upland" pixels.
+    I guess this comes also comes from Quinns's findings and recommendations
+    for river drainage.    
             
-    - Probably this alogirthm requires a conditioned dem (sinks+fdr),
+    - This algorithm requires a conditioned dem (sinks+fdr),
     so using raw or bare-earth dem could put additional challenge.
   
     - I included lots of comments to make it more understandable (to me)
     
-    - Adapted indexing of running windows and related booleans (jj,ii,etc.)
+    - Adapted indexing of running pixel 9x9 window and related booleans (jj,ii,etc.)
 
     - Replaced variable ZERO = 0.0000001 to 0.
     - Replaced initial value for atb from -9.9 to -1
     - Final table is filtered for non-negative atb
     - Returns both atb (which is ln(a/tanb) ) and flow accum
-
  
     - (not really) issues carried from original code:
       : average downslope slope is also calculated but not returned 
  
- 
-Issues:
-
-    - I do not understand WHY rivers/sink pixels are allowed to be
-    processed even if upslopes were not resolved, which is a clear
-    restriction for the "upland" pixels.
-        
-    For instance...
-    River/sink pixel has the following code for the topographic index.
-        atb[i,j] = np.log(area[i,j] / (2 * sumtb))
-    ..thus it seems to me the flow accumulation [area] should've been
-    previouly calculated upstream   
-    .. it would make sense to me only if ("anyhow") the "river" pixel
-    are located in the last i,j indexes.
    
-   - HOWEVER, according to Wolock & Price (1994) the 'a' parameter is
-   not based on whole basin flow accumulation.
- 
- 
 TODO:
     - assert dem and river matrixes
     - get resolution from raster metadata
-    - test! :/
+    - test and check! LOL. only theory and programming so far.
  
 '''
 
