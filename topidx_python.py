@@ -34,13 +34,11 @@ Notes:
      elsewhere are doing it properly.
      
      - I often see lectures/notes/teachings/videos/etc suggesting
-     straigthforward use of flowacc in the index, without accounting
+     (1) straigthforward use of flowacc in the index ans (2) not accounting
      weighted countour length or proper river treatment.
      
-    - By translating the original code, I believe the (upstream) area
-    is being updated during the process resulting in a flow_acc which
-    accounts for a weighted contour length adjustment.
-    Hence, I understand it's is based on Quinn's et al. (1991) proposal.
+    - By translating the original code, It seems to me it accounts for
+    a weighted contour length adjustment based on Quinn's et al. (1991) proposal.
             
     - Probably this alogirthm requires a conditioned dem (sinks+fdr),
     so using raw or bare-earth dem could put additional challenge.
