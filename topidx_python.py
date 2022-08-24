@@ -21,22 +21,12 @@
  EM O’LOUGHLIN (1986). Prediction of Surface Saturation Zones in Natural Catchments
  by Topographic Analysis. Water Resources Research, 22(5), 794–804.
  doi:10.1029/wr022i005p00794 
-
-Issues:
-
-    - I do not understand WHY rivers/sink pixels are allowed to be
-    processed even if upslopes were not resolved, which is a clear
-    restriction for the "upland" pixels.
-        
-    For instance...
-    River/sink pixel has the following code for the topographic index.
-        atb[i,j] = np.log(area[i,j] / (2 * sumtb))
-    ..thus it seems to me the flow accumulation [area] should've been
-    previouly calculated upstream..
-   
-   .. it makes sense to me only if ("anyhow") the "river" pixels are located in
-   the last i-j indexes.
  
+ WOLOCK DM, PRICE CV (1994) Effects of digital elevation model map scale and data resolution
+ on a topography-based watershed model. WATER RESOURCES RESEARCH, VOL. 30, NO. 11,
+ PAGES 3041-3052
+
+
 Notes:
      
     - According to Beven & Kirkby (2009) the 'a' parameter is the
@@ -67,6 +57,24 @@ Notes:
  
     - (not really) issues carried from original code:
       : average downslope slope is also calculated but not returned 
+ 
+ 
+Issues:
+
+    - I do not understand WHY rivers/sink pixels are allowed to be
+    processed even if upslopes were not resolved, which is a clear
+    restriction for the "upland" pixels.
+        
+    For instance...
+    River/sink pixel has the following code for the topographic index.
+        atb[i,j] = np.log(area[i,j] / (2 * sumtb))
+    ..thus it seems to me the flow accumulation [area] should've been
+    previouly calculated upstream   
+    .. it would make sense to me only if ("anyhow") the "river" pixel
+    are located in the last i,j indexes.
+   
+   - HOWEVER, according to Wolock & Price (1994) the 'a' parameter is
+   not based on whole basin flow accumulation.
  
  
 TODO:
